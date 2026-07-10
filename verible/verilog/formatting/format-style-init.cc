@@ -29,11 +29,13 @@
 using verible::AlignmentPolicy;
 using verible::IndentationStyle;
 using verilog::formatter::AlignmentGroupBoundary;
+using verilog::formatter::ClosingParenthesisAlignment;
+using verilog::formatter::ParenthesisPaddingPolicy;
 
-// AlignmentGroupBoundary flag support.
 namespace verilog {
 namespace formatter {
 
+// AlignmentGroupBoundary flag support.
 static const verible::EnumNameMap<AlignmentGroupBoundary> &
 AlignmentGroupBoundaryNameMap() {
   static const verible::EnumNameMap<AlignmentGroupBoundary>
@@ -59,6 +61,64 @@ bool AbslParseFlag(std::string_view text, AlignmentGroupBoundary *boundary,
 }
 
 std::string AbslUnparseFlag(const AlignmentGroupBoundary &boundary) {
+  std::ostringstream stream;
+  stream << boundary;
+  return stream.str();
+}
+
+// ParenthesisPaddingPolicy flag support.
+static const verible::EnumNameMap<ParenthesisPaddingPolicy> &
+ParenthesisPaddingPolicyNameMap() {
+  static const verible::EnumNameMap<ParenthesisPaddingPolicy>
+      kParenthesisPaddingPolicyNameMap({
+          {"none", ParenthesisPaddingPolicy::kNone},
+          {"space", ParenthesisPaddingPolicy::kSpace},
+          {"infer", ParenthesisPaddingPolicy::kInferUserIntent},
+      });
+  return kParenthesisPaddingPolicyNameMap;
+}
+
+std::ostream &operator<<(std::ostream &stream,
+                         ParenthesisPaddingPolicy boundary) {
+  return ParenthesisPaddingPolicyNameMap().Unparse(boundary, stream);
+}
+
+bool AbslParseFlag(std::string_view text, ParenthesisPaddingPolicy *boundary,
+                   std::string *error) {
+  return ParenthesisPaddingPolicyNameMap().Parse(text, boundary, error,
+                                               "ParenthesisPaddingPolicy");
+}
+
+std::string AbslUnparseFlag(const ParenthesisPaddingPolicy &boundary) {
+  std::ostringstream stream;
+  stream << boundary;
+  return stream.str();
+}
+
+// ClosingParenthesisAlignment flag support.
+static const verible::EnumNameMap<ClosingParenthesisAlignment> &
+ClosingParenthesisAlignmentNameMap() {
+  static const verible::EnumNameMap<ClosingParenthesisAlignment>
+      kClosingParenthesisAlignmentNameMap({
+          {"flush-left", ClosingParenthesisAlignment::kFlushLeft},
+          {"align", ClosingParenthesisAlignment::kAlign},
+          {"infer", ClosingParenthesisAlignment::kInferUserIntent},
+      });
+  return kClosingParenthesisAlignmentNameMap;
+}
+
+std::ostream &operator<<(std::ostream &stream,
+                         ClosingParenthesisAlignment boundary) {
+  return ClosingParenthesisAlignmentNameMap().Unparse(boundary, stream);
+}
+
+bool AbslParseFlag(std::string_view text, ClosingParenthesisAlignment *boundary,
+                   std::string *error) {
+  return ClosingParenthesisAlignmentNameMap().Parse(text, boundary, error,
+                                               "ClosingParenthesisAlignment");
+}
+
+std::string AbslUnparseFlag(const ClosingParenthesisAlignment &boundary) {
   std::ostringstream stream;
   stream << boundary;
   return stream.str();
@@ -128,6 +188,23 @@ ABSL_FLAG(AlignmentPolicy, enum_assignment_statement_alignment,
           AlignmentPolicy::kInferUserIntent,
           "Format assignments with enums: {align,flush-left,preserve,infer}");
 
+ABSL_FLAG(
+    ParenthesisPaddingPolicy, named_parameter_parenthesis_padding,
+    ParenthesisPaddingPolicy::kInferUserIntent,
+    "Format parenthesis padding for named parameters: {none,space,infer}");
+ABSL_FLAG(ParenthesisPaddingPolicy, named_port_parenthesis_padding,
+          ParenthesisPaddingPolicy::kInferUserIntent,
+          "Format parenthesis padding for named ports: {none,space,infer}");
+
+ABSL_FLAG(ClosingParenthesisAlignment, named_parameter_closing_parenthesis,
+          ClosingParenthesisAlignment::kInferUserIntent,
+          "Format closing parenthesis alignment for named parameters: "
+          "{flush-left,align,infer}");
+ABSL_FLAG(ClosingParenthesisAlignment, named_port_closing_parenthesis,
+          ClosingParenthesisAlignment::kInferUserIntent,
+          "Format closing parenthesis alignment for named ports: "
+          "{flush-left,align,infer}");
+
 ABSL_FLAG(bool, compact_indexing_and_selections, true,
           "Use compact binary expressions inside indexing / bit selection "
           "operators");
@@ -173,8 +250,12 @@ void InitializeFromFlags(FormatStyle *style) {
   STYLE_FROM_FLAG(struct_union_members_alignment);
   STYLE_FROM_FLAG(named_parameter_indentation);
   STYLE_FROM_FLAG(named_parameter_alignment);
+  STYLE_FROM_FLAG(named_parameter_parenthesis_padding);
+  STYLE_FROM_FLAG(named_parameter_closing_parenthesis);
   STYLE_FROM_FLAG(named_port_indentation);
   STYLE_FROM_FLAG(named_port_alignment);
+  STYLE_FROM_FLAG(named_port_parenthesis_padding);
+  STYLE_FROM_FLAG(named_port_closing_parenthesis);
   STYLE_FROM_FLAG(module_net_variable_alignment);
   STYLE_FROM_FLAG(assignment_statement_alignment);
   STYLE_FROM_FLAG(enum_assignment_statement_alignment);

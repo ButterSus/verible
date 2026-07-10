@@ -58,10 +58,18 @@ To pipe from stdin, use '-' as <file>.
       {align,flush-left,preserve,infer}); default: infer;
     --named_parameter_indentation (Indent named parameter assignments:
       {indent,wrap}); default: wrap;
+    --named_parameter_connection_padding (Pads the interior of named parameter
+      connection parentheses: {none,space,infer}); default: infer;
+    --named_parameter_closing_parenthesis (Placement of the closing parenthesis
+      in aligned named parameters: {flush-left,align,infer}); default: infer;
     --named_port_alignment (Format named port connections:
       {align,flush-left,preserve,infer}); default: infer;
     --named_port_indentation (Indent named port connections: {indent,wrap});
       default: wrap;
+    --named_port_connection_padding (Pads the interior of named port connection
+      parentheses: {none,space,infer}); default: infer;
+    --named_port_closing_parenthesis (Placement of the closing parenthesis in
+      aligned named ports: {flush-left,align,infer}); default: infer;
     --port_declarations_alignment (Format port declarations:
       {align,flush-left,preserve,infer}); default: infer;
     --port_declarations_indentation (Indent port declarations: {indent,wrap});

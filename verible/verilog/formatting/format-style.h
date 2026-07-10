@@ -43,6 +43,45 @@ bool AbslParseFlag(std::string_view text, AlignmentGroupBoundary *boundary,
                    std::string *error);
 std::string AbslUnparseFlag(const AlignmentGroupBoundary &boundary);
 
+// For named connection parentheses (ports and parameters), this enum controls
+// the padding spacing behavior inside the parentheses
+enum class ParenthesisPaddingPolicy {
+  // Do not insert any spaces inside parentheses.
+  kNone,
+
+  // Insert a space after the open paren and before the close paren (e.g. `.clk(
+  // sys_clk )`)
+  kSpace,
+
+  // Infer whether user wanted none or space padding, based on original spacing.
+  kInferUserIntent,
+};
+
+std::ostream &operator<<(std::ostream &, ParenthesisPaddingPolicy);
+bool AbslParseFlag(std::string_view text, ParenthesisPaddingPolicy *boundary,
+                   std::string *error);
+std::string AbslUnparseFlag(const ParenthesisPaddingPolicy &boundary);
+
+// For sections of code where named connection are vertically aligned, this enum
+// controls the alignment behavior of the closing parenthesis.
+enum class ClosingParenthesisAlignment {
+  // Keep the closing parenthesis tight against the end of the inner signal
+  // name.
+  kFlushLeft,
+
+  // Vertically align closing parentheses to match a unified right column.
+  kAlign,
+
+  // Infer whether user wanted flush-left or aligned closing parentheses, based
+  // on original spacing.
+  kInferUserIntent,
+};
+
+std::ostream &operator<<(std::ostream &, ClosingParenthesisAlignment);
+bool AbslParseFlag(std::string_view text, ClosingParenthesisAlignment *boundary,
+                   std::string *error);
+std::string AbslUnparseFlag(const ClosingParenthesisAlignment &boundary);
+
 // Style parameters that are specific to Verilog formatter
 struct FormatStyle : public verible::BasicFormatStyle {
   using AlignmentPolicy = verible::AlignmentPolicy;
@@ -78,12 +117,30 @@ struct FormatStyle : public verible::BasicFormatStyle {
   // For internal testing purposes, this is default to kAlign.
   AlignmentPolicy named_parameter_alignment = AlignmentPolicy::kAlign;
 
+  // Control the spacing behavior inside the parentheses of named parameters.
+  ParenthesisPaddingPolicy named_parameter_parenthesis_padding =
+      ParenthesisPaddingPolicy::kInferUserIntent;
+
+  // Control the alignment behavior of the closing parenthesis for vertically
+  // aligned named parameter blocks.
+  ClosingParenthesisAlignment named_parameter_closing_parenthesis =
+      ClosingParenthesisAlignment::kInferUserIntent;
+
   // Control indentation amount for named port connections.
   IndentationStyle named_port_indentation = IndentationStyle::kWrap;
 
   // Control how named ports (e.g. in module instances) are formatted.
   // Internal tests assume these are forced to kAlign.
   AlignmentPolicy named_port_alignment = AlignmentPolicy::kAlign;
+
+  // Control the spacing behavior inside the parentheses of named ports.
+  ParenthesisPaddingPolicy named_port_parenthesis_padding =
+      ParenthesisPaddingPolicy::kInferUserIntent;
+
+  // Control the alignment behavior of the closing parenthesis for vertically
+  // aligned named port blocks.
+  ClosingParenthesisAlignment named_port_closing_parenthesis =
+      ClosingParenthesisAlignment::kInferUserIntent;
 
   // Control how module-local net/variable declarations are formatted.
   // Internal tests assume these are forced to kAlign.
