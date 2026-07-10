@@ -327,7 +327,9 @@ class ActualNamedParameterColumnSchemaScanner
       case NodeEnum::kParenGroup:
         // Second column starts at the open parenthesis.
         if (Context().DirectParentIs(NodeEnum::kParamByName)) {
-          ReserveNewColumn(node, FlushLeft);
+          ReserveNewColumn(*node[0], FlushLeft);
+          ReserveNewColumn(*node[1], FlushLeft);
+          ReserveNewColumn(*node[2], FlushLeft);
         }
         break;
       default:
@@ -359,7 +361,9 @@ class ActualNamedPortColumnSchemaScanner : public VerilogColumnSchemaScanner {
       case NodeEnum::kParenGroup:
         // Second column starts at the open parenthesis.
         if (Context().DirectParentIs(NodeEnum::kActualNamedPort)) {
-          ReserveNewColumn(node, FlushLeft);
+          ReserveNewColumn(*node[0], FlushLeft);
+          ReserveNewColumn(*node[1], FlushLeft);
+          ReserveNewColumn(*node[2], FlushLeft);
         }
         break;
       default:
